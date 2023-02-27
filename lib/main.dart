@@ -1,47 +1,64 @@
 import 'package:flutter/material.dart';
-import 'package:netflix/screen/home_screen.dart';
-import 'package:netflix/widget/bottom_bar.dart';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutterfire_ui/auth.dart';
+
+import 'main_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp();
   runApp(MyApp());
-
 }
 
-class MyApp extends StatefulWidget {
-  _MyAppState createState() => _MyAppState();
-}
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
-class _MyAppState extends State<MyApp>{
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'MeongFlix',
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        primaryColor: Colors.black,
-        accentColor: Colors.white
-      ),
-      home: DefaultTabController(
-        length: 4,
-        child: Scaffold(
-          body: TabBarView(
-            physics: NeverScrollableScrollPhysics(),
-            children: <Widget>[
-              HomeScreen(),
-              Container(child: Center(child: Text('search'),),),
-              Container(child: Center(child: Text('save'),),),
-              Container(child: Center(child: Text('more'),),),
-            ],
-          ),
-          bottomNavigationBar: Bottom(),
-        ),
-      )
+      home: MyPage(),
+    );
+  }
+}
+
+class MyPage extends StatelessWidget {
+  const MyPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Authentication(),
+    );
+  }
+}
+
+class Authentication extends StatelessWidget {
+  const Authentication({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: FirebaseAuth.instance.authStateChanges(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return SignInScreen(
+            headerBuilder: (context, constraints, double) {
+              return Padding(
+                padding: EdgeInsets.all(20),
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: Image(
+                    image: AssetImage('images/meong.jpg'),
+                  ),
+                ),
+              );
+            },
+            providerConfigs: [EmailProviderConfiguration()],
+          );
+        }
+        return MainPage();
+      },
     );
   }
 }

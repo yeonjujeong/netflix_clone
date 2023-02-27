@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:netflix/widget/carousel_slider.dart';
 
@@ -67,6 +68,15 @@ class TopBar extends StatelessWidget{
             'images/meong.jpg',
             fit: BoxFit.contain,
             height: 25,
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.exit_to_app_sharp,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              FirebaseAuth.instance.signOut();
+            },
           ),
           Container(
             padding: EdgeInsets.only(right: 1),
